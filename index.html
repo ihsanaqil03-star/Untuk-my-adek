@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HBD Shazfa!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;700&display=swap');
+
+        :root {
+            --pink-light: #ffd1dc;
+            --pink-medium: #ffb6c1;
+            --pink-dark: #ff6b81;
+            --purple-light: #e0c3fc;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+            color: #444;
+        }
+
+        /* Background Bergerak untuk Halaman 1 & 3 */
+        .animated-bg {
+            background: linear-gradient(120deg, #ffe4e1, var(--pink-light), var(--purple-light));
+            background-size: 300% 300%;
+            animation: gradientBG 6s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Halaman PIN (Dark Mode kayak Layar Kunci) */
+        #page2.dark-bg {
+            background: radial-gradient(circle, #2c3e50, #000);
+            color: #eee;
+        }
+
+        .screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            position: absolute;
+            transition: opacity 0.5s, transform 0.5s;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+        }
+
+        .container {
+            width: 85%;
+            max-width: 400px;
+            padding: 40px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(255, 107, 129, 0.2);
+            text-align: center;
+            z-index: 10;
+            position: relative;
+        }
+
+        #page2 .container {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #444;
+            color: #eee;
+        }
+
+        h1 { color: var(--pink-dark); font-size: 3em; margin: 10px 0; }
+        h1.gold { color: gold; font-size: 1.5em; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+        
+        .shazfa { color: var(--pink-dark); font-weight: 700; text-decoration: underline; }
+
+        button.main-btn {
+            background: var(--pink-dark);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 107, 129, 0.4);
+            transition: all 0.3s;
+        }
+
+        button.main-btn:hover {
+            background: #ff4757;
+            transform: scale(1.05);
+        }
+
+        /* Input PIN Estetis */
+        .pin-wrapper {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+        }
+
+        .pin-digit {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #555;
+            background: #1a1a1a;
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            border-radius: 10px;
+            outline: none;
+            -webkit-text-security: disc; /* Biar titik-titik */
+        }
+        
+        .pin-digit:focus { border-color: var(--pink-dark); }
+
+        #errorMsg { color: #ff6b6b; font-size: 14px; display: none; margin-top: 15px; }
+
+        /* Kotak Surat */
+        .letter-box {
+            text-align: left;
+            font-size: 15px;
+            line-height: 1.8;
+            max-height: 350px;
+            overflow-y: auto;
+            padding: 0 15px;
+            color: #333;
+        }
+
+        /* Floating elements (snow/hearts) */
+        .hearts {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .heart {
+            position: absolute;
+            background: rgba(255, 182, 193, 0.7);
+            border-radius: 50%;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(360deg); }
+        }
+
+    </style>
+</head>
+<body class="animated-bg">
+
+    <div class="hearts" id="hearts"></div>
+
+    <audio id="clickSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+    <audio id="tadaSound" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"></audio>
+
+
+    <div id="page1" class="screen">
+        <div class="container">
+            <h1>HBD 🎂</h1>
+            <p style="font-size: 1.2em;">untuk <br><span class="shazfa">My adekkk Shazfa</span></p>
+            <p>Ada surat spesial buat kamu!</p>
+            <button class="main-btn" onclick="nextPage(2)">Buka</button>
+        </div>
+    </div>
+
+    <div id="page2" class="screen hidden dark-bg">
+        <div class="container">
+            <h1 class="gold">Security Check 🔒</h1>
+            <p>Masukkan PIN untuk membuka surat</p>
+            <div class="pin-wrapper">
+                <input type="tel" maxlength="1" class="pin-digit" pattern="[0-9]" inputmode="numeric">
+                <input type="tel" maxlength="1" class="pin-digit" pattern="[0-9]" inputmode="numeric">
+                <input type="tel" maxlength="1" class="pin-digit" pattern="[0-9]" inputmode="numeric">
+                <input type="tel" maxlength="1" class="pin-digit" pattern="[0-9]" inputmode="numeric">
+                <input type="tel" maxlength="1" class="pin-digit" pattern="[0-9]" inputmode="numeric">
+                <input type="tel" maxlength="1" class="pin-digit" pattern="[0-9]" inputmode="numeric">
+            </div>
+            <button class="main-btn" style="background: #444;" onclick="checkPin()">Verify PIN</button>
+            <p id="errorMsg">PIN salah! Coba inget-inget tgl jadian/tgl spesial deh 🤔</p>
+        </div>
+    </div>
+
+    <div id="page3" class="screen hidden">
+        <div class="container">
+            <h1>Dear Adek.. 💌</h1>
+            <div class="letter-box">
+                <p>Hatur nuhun pisan kanggo janten réréncangan kuring anu bingung (sareng anjeun gélo ogé, saleresna) anu ngeusian bewara WA, anu nelepon sababaraha jam. Kuring tungtymna boga pakasaban (sanajan kuring keur dipake dina eta).</p>
+                <p>HBD, wilujeung tos yuswa, caket kana tungtungna, sareng langkung tiasa ngabully anjeun😝. Kuring ngan bakal nyebutkeun ieu ngagunakeun ieu. Puguh teuing nyieun dokumen panjang siga kamari...mangga wae ieu teh...</p>
+                <p>Mugi-mugi engke abdi langkung pinter, lucu, ditampi di UNPAD, ngareueuskeun ka kolot, sareng ngawujudkeun cita-cita. Mudah-mudahan abdi tiasa lulus ieu ujian ti Allah.</p>
+            </div>
+            <p style="margin-top: 20px; font-weight: bold; color: var(--pink-dark)">Sincerely, Your Fav Person</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        // -- SETUP SUARA --
+        const clickAudio = document.getElementById("clickSound");
+        const tadaAudio = document.getElementById("tadaSound");
+
+        function playClick() { clickAudio.play().catch(e => console.log(e)); }
+        function playTada() { tadaAudio.play().catch(e => console.log(e)); }
+
+        // -- LOGIKA PIN --
+        const correctPin = "180823";
+        const pinDigits = document.querySelectorAll('.pin-digit');
+
+        // Pindah input otomatis pas ngetik
+        pinDigits.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1 && index < pinDigits.length - 1) {
+                    pinDigits[index + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === "Backspace" && index > 0 && e.target.value === "") {
+                    pinDigits[index - 1].focus();
+                }
+            });
+        });
+
+        function checkPin() {
+            playClick();
+            let enteredPin = "";
+            pinDigits.forEach(input => enteredPin += input.value);
+
+            if (enteredPin === correctPin) {
+                document.body.classList.remove('dark-bg');
+                fireConfetti();
+                playTada();
+                setTimeout(() => nextPage(3), 500);
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+                pinDigits.forEach(input => input.value = ""); // Reset input
+                pinDigits[0].focus();
+            }
+        }
+
+        // -- LOGIKA HALAMAN & ANIMASI --
+        function nextPage(pageNumber) {
+            playClick();
+            document.querySelectorAll('.screen').forEach(el => el.classList.add('hidden'));
+            document.getElementById('page' + pageNumber).classList.remove('hidden');
+        }
+
+        // Confetti effect
+        function fireConfetti() {
+            confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+        }
+
+        // Create floating background elements
+        const heartsContainer = document.getElementById('hearts');
+        for (let i = 0; i < 30; i++) {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            const size = Math.random() * 15 + 5;
+            heart.style.width = size + 'px';
+            heart.style.height = size + 'px';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 3 + 2 + 's';
+            heart.style.animationDelay = Math.random() * 5 + 's';
+            heartsContainer.appendChild(heart);
+        }
+    </script>
+</body>
+</html>
